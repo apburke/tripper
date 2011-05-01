@@ -4,9 +4,14 @@ from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = patterns('tripper.views',
     # Examples:
-    # url(r'^$', 'tripper.views.home', name='home'),
+    url(r'^$', 'home', name='home'),
+    url(r'^(\d{4})$', 'year', name='year'),
+    url(r'^(\d{4})/(\d{2})$', 'month_view', name='month'),
+    # url(r'^(\d{4})/(\d{2})/w(\d{2})$', 'week', name='week'),
+    # url(r'^(\d{4})/(\d{2})/d(\d{2})$', 'day', name='day'),
+
     # url(r'^tripper/', include('tripper.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

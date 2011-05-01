@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block extra_head %}
+<style type="text/css">
+.col1
+{
+background-color:beige;
+}
+.col2
+{
+background-color:lightcyan;
+}
+</style>
+{% endblock %}
+
+
+
+{% block title %}{{ current_month.month_name }} {{ current_month.year }} Calendar{% endblock %}
+
+{% block header %}
+<a width="50%" href="{% url month previous_month.year previous_month.month %}">{{ previous_month.month_name }} {{ previous_month.year }}</a>
+<b width="30%">{{ current_month.month_name }} {{ current_month.year }}</b>
+<a width="30%" href="{% url month next_month.year next_month.month %}">{{ next_month.month_name }} {{ next_month.year }}</a>
+{% endblock %}
+
+{% block content %}
+<table width="75%">
+	<tr>
+	{% for day_name in day_names %}
+	<th width="100" class="{% cycle 'col1' 'col2' %}">{{ day_name }}</th>
+	{% endfor %}
+	</tr>
+	{% for week in week_list %}
+	<tr height="100">
+		{% for day in week %}
+		<td align="right" class="{{ forloop.counter0|divisibleby:'2'|yesno:'col1,col2' }}">
+		{% if day %}{{ day }}{% endif %}
+		</td>
+		{% endfor %}
+	</tr>
+	{% endfor %}
+</table>
+{% endblock %}
