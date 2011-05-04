@@ -1,5 +1,5 @@
 from django.db import models
-from fields import RRuleField
+from fields import RRuleField, TimeDeltaField
 
 class Calendar(models.Model):
     """
@@ -32,7 +32,8 @@ class Session(models.Model):
     Details of an event's session
     """
     event = models.ForeignKey(Event)
-    rrule = RRuleField(null=True)
+    duration = TimeDeltaField(blank=True, null=True)
+    rrule = RRuleField(blank=True, null=True)
 
     def __unicode__(self):
-        return "Session for {0}".format(unicode(self.event))
+        return "Session for {0}".format(unicode(self.event) or u'unknown')
