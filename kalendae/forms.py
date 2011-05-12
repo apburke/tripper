@@ -1,53 +1,46 @@
-from dateutil.rrule import *
+import dateutil.rrule as rrule
 from django import forms
-import  widgets
+#import widgets
 from django.utils.translation import ugettext_lazy as _
 
-class RRuleField(forms.MultiValueField):
-    widget = widgets.RRuleWidget
 
-    def __init__(self, input_formats=None, *args,
-            **kwargs):
+class RRuleWidget(forms.MultiWidget):
+    """
+    A widget that splits rrule input into ...
+    """
+    def __init__(self, choices=None):
+        widgets = (
+                forms.DateTimeInput(),
+                forms.Select(choices=choices)
+                )
+        super(RRuleWidget, self).__init__(widgets)
+
+    def decompress(self, value):
+        if value:
+            return [value._dtstart, value._freq]
+        return [None, None]
+
+
+class RRuleField(forms.MultiValueField):
+    choices=list(enumerate(
+        ('YEARLY', 'MONTHLY', 'WEEKLY',
+            'DAILY', 'HOURLY', 'SECONDLY')))
+    widget = RRuleWidget(choices)
+
+    def __init__(self, *args, **kwargs):
         fields = (
-                forms.DateTimeField(input_formats=input_formats),
+                forms.DateTimeField(
+                    label='start datetime'
+                    ),
+                forms.ChoiceField(
+                    choices=self.choices,
+                    label='frequency'
+                    ),
                 )
         super(RRuleField, self).__init__(fields, *args, **kwargs)
 
     def compress(self, data_list):
         print data_list
         if data_list:
-            return rrule(0, count=1, dtstart=data_list[0])
-        return None
-
-class RecurringDateTimeWidget(forms.SplitDateTimeWidget):
-    """
-    A widget that splits rrule input into ...
-    """
-    def __init__(self, attrs=None, date_format=None, time_format=None):
-        super(RecurringDateTimeWidget, self).__init__(attrs, date_format,
-                time_format)
-
-    def decompress(self, value):
-        if value:
-            return super(RecurringDateTimeWidget, self).decompress(value._dtstart)
-        return None
-
-class RecurringDateTimeField(forms.MultiValueField):
-    widget = forms.SplitDateTimeWidget
-
-    def __init__(self, input_date_formats=None, input_time_formats=None, *args, **kwargs):
-        errors = self.default_error_messages.copy()
-        if 'error_messages' in kwargs:
-            errors.update(kwargs['error_messages'])
-        localize = kwargs.get('localize', False)
-        fields = (
-                SplitDateTimeField(input_date_formats=input_date_formats,
-                    input_time_formats=input_time_formats),
-
-                )
-        super(RecurringDateTimeField, self).__init__(fields, *args, **kwargs)
-
-    def compress(self, data_list):
-        if data_list:
-            pass
+            return rrule.rrule(freq=data_list[1], count=1, dtstart=data_list[0])
         return None

@@ -23,10 +23,15 @@ def month_view(request, year, month):
     next_month = {'year': year if month<12 else year+1,
                   'month': "{0:02d}".format(n_m),
 		  'month_name': calendar.month_name[n_m]}
-    return render_to_response('month.html',
-        {'day_names': calendar.day_name[:],
-	 'week_list': calendar.Calendar().monthdayscalendar(year, month),
-	 'current_month': {'year': year, 'month': month, 'month_name': calendar.month_name[month]},
-	 'previous_month': previous_month,
-	 'next_month': next_month
-	})
+    return render_to_response('month.html', {
+        'day_names': calendar.day_name[:],
+        'week_list': calendar.Calendar().monthdayscalendar(year, month),
+        'current_month': {
+            'year': year,
+            'month': month,
+            'month_name': calendar.month_name[month]
+            },
+        'previous_month': previous_month,
+        'next_month': next_month})
+
+def session_create(request, 
